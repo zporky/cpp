@@ -1,9 +1,11 @@
 #include <iostream>
-#include "stack.h"
+#include <stack>
+//#include "stack.h"
 
 int main()
 {
-  Stack st{};	
+  std::stack<int> st;	
+  //Stack st;	
   for ( int i = 0; i <10; ++i)
   {
      st.push(i);

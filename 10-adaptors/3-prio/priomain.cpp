@@ -1,9 +1,11 @@
 #include <iostream>
-#include "prioque.h"
+#include <queue>
+//#include "prioque.h"
 
 int main()
 {
-  PrioQue pq;
+  std::priority_queue<int> pq;	
+  //  PrioQue pq;
   for ( auto i : { 4, 2, 6, 8, 2, 1, 9, 45, 12, 6, 7, 4, 34, 82 } )
     pq.push(i);
 
