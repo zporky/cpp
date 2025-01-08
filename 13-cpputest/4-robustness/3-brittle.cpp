@@ -11,8 +11,8 @@ TEST(HashSetTestGroup, InsertTest)
 {
    std::unordered_set<int> s;
    add(s,1);   
-   add(s,2);   
    add(s,3);
-   CHECK_EQUAL(1, *s.begin());
+   add(s,2);   
+   CHECK_EQUAL(3, *s.begin());
 }
 
