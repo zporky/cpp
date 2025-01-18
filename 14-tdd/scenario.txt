@@ -1,0 +1,14 @@
+1. Init
+
+1.  üres header, CHECK_EQUAL
+01  2 adattag, inicializálatlan,  size() és empty()  -> inicializálni
+02  template
+03  constant test -> const member fv-ek
+
+2. PushBack
+04  üres push_back, test fails -> write push_back
+05  elkészíteni a push_back-et, fail-el memory leak -> unique_ptr, make_unique
+06   front és back -> const verzió is copy constr is kell
+       legyen pointer helyett vector<array> ?
+06  push many  ciklus
+07 index operator,  check front() == di[0]    back() == di[di.size()-1]
