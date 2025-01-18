@@ -12,3 +12,4 @@
        legyen pointer helyett vector<array> ?
 06  push many  ciklus
 07 index operator,  check front() == di[0]    back() == di[di.size()-1]
+08 refactoring index.
