@@ -1,6 +1,7 @@
+#include "deq.h"
 #include "CppUTest/TestHarness.h"
 #include "CppUTestExt/MockSupport.h"
-#include "deq.h"
+#include <iostream>
 
 template <typename T>
 struct MockVector
@@ -13,23 +14,25 @@ struct MockVector
   T& operator[](size_t idx) { return vec_[idx]; }	  
   const T& operator[](size_t idx) const { return vec_[idx]; }	  
 
-  typename std::vector<T>::iterator begin() { vec_.begin(); }
+  typename std::vector<T>::iterator begin() { return vec_.begin(); }
 
-  void push_back(const T& t)	
+  void push_back(T&& t)	
   {
-    vec_.push_back(t);	  
+    std::cerr << "mock push_back()\n";    
+    vec_.push_back(std::move(t));	  
   }
-  void insert( typename std::vector<T>::iterator it, const T& t)
+  void insert( typename std::vector<T>::iterator it, T&& t)
   {
-     vec_.insert(it,t);	  
+    vec_.insert(it,std::move(t));	  
   }
   void erase( typename std::vector<T>::iterator it)
   {
-     vec_.erase(it);	  
+    vec_.erase(it);	  
   }
+  std::vector<T>& getVec() { return vec_; }
 
   std::vector<T> vec_{};
-}
+};
 
 
 TEST_GROUP(DeqInit) { };
@@ -74,14 +77,6 @@ TEST(DeqPushBack, OneAfterCreate)
 
   CHECK_EQUAL(42, di.front() );
   CHECK_EQUAL(42, di.back() );
-
-//  const Deq<int> dc = di;
- 
-//  CHECK_EQUAL(1, dc.size() );
-//  CHECK( !dc.empty() );
-
-//  CHECK_EQUAL(42, dc.front() );
-//  CHECK_EQUAL(42, dc.back() );
 }
 
 TEST(DeqPushBack, ManyAfterCreate)
@@ -282,10 +277,20 @@ TEST( Exception, NoException)
   CHECK_THROWS( std::out_of_range, di.at(123456) );		  
 }
 
+TEST_GROUP( Mocking ) 
+{ 
+  void teardown()
+  {
+    mock().clear();
+  }
+};
+
+using MockType = std::unique_ptr<std::array<int,ChunkSize_>>;
+
 TEST(Mocking, BackFrontMixed)
 {
   const int toInsert = 73;
-  Deq<int,MockVector<int>> di;
+  Deq<int,MockVector<MockType>> di;
 
   for ( int i = 0; i < toInsert; ++i)  
   {
@@ -301,3 +306,4 @@ TEST(Mocking, BackFrontMixed)
     CHECK_EQUAL( -toInsert+i, di[i] );
   }	  
 }	
+

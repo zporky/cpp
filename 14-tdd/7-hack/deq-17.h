@@ -8,11 +8,12 @@
 #include <stdexcept>
 //#include <iostream>
 
-template <typename T, typename CONT = std::vector<T>>
+static const size_t ChunkSize_ = 16; 
+
+template <typename T, typename CONT = std::vector<std::unique_ptr<std::array<T,ChunkSize_>>>>
 class Deq
 {
 public:
-  static const size_t ChunkSize_ = 16; 
   using ChunkType = std::array<T,ChunkSize_>;
 
   size_t size()  const { return size_; } 	
@@ -33,6 +34,10 @@ public:
   const T&   operator[](size_t idx) const noexcept;
   T&   at(size_t idx);
   const T&   at(size_t idx) const;
+
+#ifdef TEST_ONLY
+  void setChunksPtr( CONT** ptr) { *ptr = &chunks_; }
+#endif  
   
 private:
   size_t endPos() const  { return (offset_+size_) % ChunkSize_; }
@@ -43,7 +48,8 @@ private:
 
   size_t                                  size_   = 0;
   size_t                                  offset_ = 0;
-  std::vector<std::unique_ptr<ChunkType>> chunks_{};
+
+  CONT  chunks_{};
 };
 
 template <typename T, typename BASE>

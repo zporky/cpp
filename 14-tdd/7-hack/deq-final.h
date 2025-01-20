@@ -36,7 +36,7 @@ public:
   const T&   at(size_t idx) const;
 
 #ifdef TEST_ONLY
-  CONT& getChunks() { return chunks_; }
+  void setChunksPtr( CONT** ptr) { *ptr = &chunks_; }
 #endif  
   
 private:
@@ -80,6 +80,10 @@ template <typename T, typename BASE>
 void Deq<T,BASE>::pop_back()
 {
   --size_;
+  if ( bufno(size_-1) < chunks_.size()-1 ) 
+  {
+    chunks_.pop_back();	  
+  }
 }
 
 template <typename T, typename BASE>

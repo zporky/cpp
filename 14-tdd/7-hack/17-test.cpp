@@ -3,40 +3,6 @@
 #include "CppUTestExt/MockSupport.h"
 #include <iostream>
 
-template <typename T>
-struct MockVector
-{
-  size_t size() const { return vec_.size(); }
-  
-  T& front() { return vec_.front(); }
-  const T& front() const { return vec_.front(); }
-
-  T& operator[](size_t idx) { return vec_[idx]; }	  
-  const T& operator[](size_t idx) const { return vec_[idx]; }	  
-
-  typename std::vector<T>::iterator begin() { return vec_.begin(); }
-
-  void push_back(T&& t)	
-  {
-    mock().actualCall("vector_push_back");	  
-    vec_.push_back(std::move(t));	  
-  }
-  void insert( typename std::vector<T>::iterator it, T&& t)
-  {
-    mock().actualCall("vector_insert");	  
-    vec_.insert(it,std::move(t));	  
-  }
-  void erase( typename std::vector<T>::iterator it)
-  {
-    mock().actualCall("vector_erase");	  
-    vec_.erase(it);	  
-  }
-  std::vector<T>& getVec() { return vec_; }
-
-  std::vector<T> vec_{};
-};
-
-
 TEST_GROUP(DeqInit) { };
 
 TEST(DeqInit, Create)
@@ -79,6 +45,14 @@ TEST(DeqPushBack, OneAfterCreate)
 
   CHECK_EQUAL(42, di.front() );
   CHECK_EQUAL(42, di.back() );
+
+//  const Deq<int> dc = di;
+ 
+//  CHECK_EQUAL(1, dc.size() );
+//  CHECK( !dc.empty() );
+
+//  CHECK_EQUAL(42, dc.front() );
+//  CHECK_EQUAL(42, dc.back() );
 }
 
 TEST(DeqPushBack, ManyAfterCreate)
@@ -281,22 +255,23 @@ TEST( Exception, NoException)
 
 TEST_GROUP( Mocking ) 
 { 
+  void setup()	
+  {
+    di.setChunksPtr(&vp);	  
+  }
   void teardown()
   {
     mock().clear();
   }
+  Deq<int> di; 
+  std::vector<std::unique_ptr<std::array<int,ChunkSize_>>>  *vp; 
 };
-
-using MockType = std::unique_ptr<std::array<int,ChunkSize_>>;
-
 
 TEST(Mocking, BackFrontMixed)
 {
   const int toInsert = 73;
-  Deq<int,MockVector<MockType>> di;
- 
-  mock().expectNCalls(1+toInsert/ChunkSize_, "vector_push_back");
-  mock().expectNCalls(1+toInsert/ChunkSize_, "vector_insert");
+
+  CHECK_EQUAL( 0, vp->size() );
 
   for ( int i = 0; i < toInsert; ++i)  
   {
@@ -311,28 +286,69 @@ TEST(Mocking, BackFrontMixed)
   {
     CHECK_EQUAL( -toInsert+i, di[i] );
   }	  
-
-  mock().checkExpectations();
+  CHECK_EQUAL( 10, vp->size() );
 }	
- 
-TEST(Mocking, AllocFirstBack)
-{
-  Deq<int,MockVector<MockType>> di;
 
-  mock().expectOneCall("vector_push_back");
-  
+TEST(Mocking, PushBackFirstAlloc)
+{
+  CHECK_EQUAL( 0, vp->size() );
+
   di.push_back(42);
 
-  mock().checkExpectations();
+  CHECK_EQUAL( 1, vp->size() );  
 }
 
-TEST(Mocking, AllocFirstFront)
+TEST(Mocking, PushFrontFirstAlloc)
 {
-  Deq<int,MockVector<MockType>> di;
+  CHECK_EQUAL( 0, vp->size() );
 
-  mock().expectOneCall("vector_insert");
-  
   di.push_front(42);
-
-  mock().checkExpectations();
+  
+  CHECK_EQUAL( 1, vp->size() );  
 }
+
+TEST(Mocking, PushBackNextAlloc)
+{
+  CHECK_EQUAL( 0, vp->size() );
+
+  for ( int i = 0; i < 99; ++i)  
+  {
+    di.push_back(i);
+    CHECK_EQUAL( i/16 + 1, vp->size() );
+  }
+}
+
+TEST(Mocking, EraseFirst)
+{
+  CHECK_EQUAL( 0, vp->size() );
+
+  for ( int i = 0; i < 99; ++i)  
+  {
+    di.push_back(i);
+  }
+  int sz = vp->size();
+
+  for ( int i = 0; i < ChunkSize_; ++i)
+  {
+    di.pop_front();	  
+  }
+  CHECK_EQUAL( sz-1, vp->size() );
+}
+/*
+TEST(Mocking, EraseLast)
+{
+  CHECK_EQUAL( 0, vp->size() );
+
+  for ( int i = 0; i < 99; ++i)  
+  {
+    di.push_back(i);
+  }
+  int sz = vp->size();
+
+  for ( int i = 0; i < ChunkSize_; ++i)
+  {
+    di.pop_back();	  
+  }
+  CHECK_EQUAL( sz-1, vp->size() );
+}
+*/
