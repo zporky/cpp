@@ -19,7 +19,7 @@ int main()
   if ( ! v.empty() )
   {
    cnt = std::transform_reduce(
-   std::execution::par,		   
+   std::execution::seq,		   
    std::begin(v), std::end(v)-1, std::begin(v)+1, 
    !std::isspace(v[0])?1:0, std::plus{},
  [](char curr, char next){ return std::isspace(curr) && !std::isspace(next); } );
