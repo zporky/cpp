@@ -20,14 +20,12 @@ int main(int argc, char **argv)
 {
   std::list<std::unique_ptr<Vehicle>> vlist;
 
-  Creator  creator;
   Creator2 creator2;
-  Creator *cptr =  &creator2;
   
   std::string input;
   while ( std::getline(std::cin, input ) )
   {
-    vlist.push_back(cptr->create(input));
+    vlist.push_back(creator2.create(input));
 /*
   vlist.push_back( std::make_unique<Bus>("AAA-111", "Bela", 4, 8));
   vlist.push_back( std::make_unique<Truck>("BBB-222", "Dezso", 4, 3.5));
