@@ -1,0 +1,7 @@
+bus    AAA-111  Bela    4    8
+truck  BBB-222  Dezso   4    3.5
+car    ABC-123  Aladar  4    0.5
+tractor TTT-111 Jancsi  4 
+bus    CCC-333  Feri    6   10
+truck  DDD-444  Feri    6   11.5
+bus    EEE-555  Jozsi   8   42

@@ -14,26 +14,27 @@ std::unique_ptr<Vehicle> Creator::create( std::string input) const
   std::string type;
   std::istringstream is(input);
 
-  is >> type; 
+  std::string license, owner;      
+  int wheels; 
+  
+  is >> type >> license >> owner >> wheels; 
+
   if ( "car" == type )
   {
-    std::string license, owner;      
-    int wheels; double emission;
-    is >> license >> owner >> wheels >> emission;
+    double emission;
+    is >> emission;
     return std::make_unique<Car>(license, owner, wheels, emission);
   }
   else if ( "bus" == type )
   {
-    std::string license, owner;      
-    int wheels; int passangers;
-    is >> license >> owner >> wheels >> passangers;
+    int passangers;
+    is >> passangers;
     return std::make_unique<Bus>(license, owner, wheels, passangers);
   }
   else if ( "truck" == type )
   {
-    std::string license, owner;      
-    int wheels; double weight;
-    is >> license >> owner >> wheels >> weight;
+    double weight;
+    is >> weight;
     return std::make_unique<Truck>(license, owner, wheels, weight);
   }
   return nullptr;
