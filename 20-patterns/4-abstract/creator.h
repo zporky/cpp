@@ -13,13 +13,13 @@
 class Creator
 {
 public:
+  static Creator *get();
   std::unique_ptr<Vehicle> create( std::string input);
+  int add( std::string key, VehicleFactory *value) { map_[key] = value; return 0; }
+  void print() { for ( auto [k,v] : map_) std::cout << k << '\n';}
 private:
-  std::map<std::string, VehicleFactory*>  map_ = {
-	  { "bus",   new BusFactory{}   },  
-	  { "car",   new CarFactory{}   },  
-	  { "truck", new TruckFactory{} }  
-  };
+  static Creator *pinstance_;
+  std::map<std::string, VehicleFactory*>  map_;
 };
 
 #endif // CREATOR_H
