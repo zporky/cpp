@@ -7,6 +7,7 @@
 
 #include "creator.h"
 #include "exam.h"
+#include "size.h"
 #include "vehicle.h"
 
 void print(const std::unique_ptr<Vehicle>& vp)
@@ -24,9 +25,11 @@ int main()
     vlist.push_back(creator.create(input));
   }
   Exam e;
+  Size s;
   for ( auto& v : vlist ) 
   {
     v->accept(&e);
+    v->accept(&s);
   }
   return 0;
 }
